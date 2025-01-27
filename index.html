@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binayak Automobiles - Employee Management System</title>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .login-bg {
+            background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Section -->
+    <div id="loginSection" class="min-h-screen login-bg flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-center mb-6">Binayak Automobiles</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Username</label>
+                    <input type="text" id="username" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="password" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold">Binayak Automobiles</h1>
+                <button onclick="logout()" class="bg-blue-700 px-4 py-2 rounded hover:bg-blue-800">Logout</button>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-4">
+            <!-- Employee Management Section -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">Add Employee</h2>
+                    <form id="employeeForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Name</label>
+                            <input type="text" id="empName" class="w-full p-2 border rounded" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Department</label>
+                            <select id="department" class="w-full p-2 border rounded" required>
+                                <option value="GM">GM</option>
+                                <option value="Accountant">Accountant</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Billing">Billing Counter</option>
+                                <option value="Mechanic">Mechanic</option>
+                                <option value="Helper">Helper</option>
+                                <option value="Driver">Driver</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Salary</label>
+                            <input type="number" id="salary" class="w-full p-2 border rounded" required>
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Employee</button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">Salary Management</h2>
+                    <form id="advanceForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Select Employee</label>
+                            <select id="employeeSelect" class="w-full p-2 border rounded" required></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Advance Amount</label>
+                            <input type="number" id="advanceAmount" class="w-full p-2 border rounded" required>
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Record Advance</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div class="mt-8 bg-white p-6 rounded-lg shadow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Employee Records</h2>
+                    <div class="space-x-2">
+                        <button onclick="generateMonthlyReport()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            Monthly Report
+                        </button>
+                        <button onclick="generateYearlyReport()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                            Yearly Report
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salary</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Advance</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTable" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample admin credentials - In production, this should be handled securely
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'admin123';
+        
+        let employees = [];
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if(username === ADMIN_USER && password === ADMIN_PASS) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+            } else {
+                alert('Invalid credentials!');
+            }
+        });
+
+        // Add Employee Handler
+        document.getElementById('employeeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const employee = {
+                id: Date.now(),
+                name: document.getElementById('empName').value,
+                department: document.getElementById('department').value,
+                salary: parseFloat(document.getElementById('salary').value),
+                advance: 0
+            };
+            employees.push(employee);
+            updateEmployeeTable();
+            updateEmployeeSelect();
+            e.target.reset();
+        });
+
+        // Advance Payment Handler
+        document.getElementById('advanceForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const employeeId = parseInt(document.getElementById('employeeSelect').value);
+            const amount = parseFloat(document.getElementById('advanceAmount').value);
+            
+            const employee = employees.find(emp => emp.id === employeeId);
+            if(employee) {
+                employee.advance += amount;
+                updateEmployeeTable();
+            }
+            e.target.reset();
+        });
+
+        function updateEmployeeTable() {
+            const tbody = document.getElementById('employeeTable');
+            tbody.innerHTML = '';
+            
+            employees.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${emp.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${emp.department}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">₹${emp.salary}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">₹${emp.advance}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">₹${emp.salary - emp.advance}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateEmployeeSelect() {
+            const select = document.getElementById('employeeSelect');
+            select.innerHTML = '';
+            employees.forEach(emp => {
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = `${emp.name} (${emp.department})`;
+                select.appendChild(option);
+            });
+        }
+
+        function generatePDF(title, period) {
+            const doc = new jspdf.jsPDF();
+            const tableData = employees.map(emp => [
+                emp.name,
+                emp.department,
+                `₹${emp.salary}`,
+                `₹${emp.advance}`,
+                `₹${emp.salary - emp.advance}`
+            ]);
+
+            doc.text(`${title} - ${period}`, 14, 15);
+            doc.autoTable({
+                head: [['Name', 'Department', 'Salary', 'Advance', 'Balance']],
+                body: tableData,
+                startY: 20,
+            });
+
+            doc.save(`${title}_${period}.pdf`);
+        }
+
+        function generateMonthlyReport() {
+            const month = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+            generatePDF('Monthly Salary Report', month);
+        }
+
+        function generateYearlyReport() {
+            const year = new Date().getFullYear();
+            generatePDF('Yearly Salary Report', year);
+        }
+
+        function logout() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
